@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, Menu, X } from "lucide-react";
+import Link from "next/link";
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -10,28 +11,9 @@ const fadeUp = {
   transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
 };
 
-const activities = [
-  {
-    number: "01",
-    title: "Explore",
-    description:
-      "Encounter ideas, traditions and systems of knowledge.",
-  },
-  {
-    number: "02",
-    title: "Create",
-    description:
-      "Turn learning into activities, experiences and expression.",
-  },
-  {
-    number: "03",
-    title: "Connect",
-    description:
-      "Bring people together through curiosity and conversation.",
-  },
-];
 
 export default function Home() {
+  const [whatWeDoPreviewEnded, setWhatWeDoPreviewEnded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -107,15 +89,7 @@ useEffect(() => {
       >
         Journey
       </a>
-
-      <a
-        href="#activities"
-        className="nav-link"
-      >
-        Activities
-      </a>
-
-      <a
+<a
         href="#members"
         className="nav-link"
       >
@@ -240,7 +214,6 @@ useEffect(() => {
           {[
             ["01", "About", "#about"],
             ["02", "Journey", "#journey"],
-            ["03", "Activities", "#activities"],
             ["04", "Core Members", "#members"],
             ["05", "Instagram", "#instagram"],
           ].map(([number, label, href], index) => (
@@ -986,41 +959,85 @@ useEffect(() => {
       }}
       className="mt-20 md:mt-28"
     >
-      <div className="image-reveal relative aspect-[16/10] w-full overflow-hidden bg-[#151412] md:aspect-[16/8]">
+      <Link
+        href="/experiences/what-happens-here"
+        aria-label="Watch the whole Tattva IKS Centre video and leave a reaction"
+        className="group block"
+      >
+        <div className="image-reveal relative aspect-[16/10] w-full overflow-hidden bg-[#151412] md:aspect-[16/8]">
 
-        {/* What Happens Here cinematic video */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-label="Tattva IKS Centre activities and experiences"
-          className="h-full w-full object-cover object-center"
-        >
-          <source src="/videos/what-we-do.mp4" type="video/mp4" />
-        </video>
+          {/* Silent 20-second preview. The full video lives on the experience page. */}
+          <video
+            autoPlay
+            muted
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+            onTimeUpdate={(event) => {
+              const video = event.currentTarget;
 
-        {/* Cinematic overlays */}
-        <div className="pointer-events-none absolute inset-0 bg-[#080807]/10" />
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(8,8,7,0.78) 0%, rgba(8,8,7,0.18) 42%, transparent 72%)",
-          }}
-        />
+              if (video.currentTime >= 20 && !whatWeDoPreviewEnded) {
+                video.pause();
+                video.currentTime = 20;
+                setWhatWeDoPreviewEnded(true);
+              }
+            }}
+            onEnded={() => setWhatWeDoPreviewEnded(true)}
+            className="h-full w-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+          >
+            <source src="/videos/what-we-do.mp4" type="video/mp4" />
+          </video>
 
-        {/* Media label */}
-        <div className="absolute bottom-5 left-5 flex items-center gap-3 md:bottom-7 md:left-7">
-          <span className="h-px w-6 bg-white/60" />
+          {/* Cinematic overlays */}
+          <div className="pointer-events-none absolute inset-0 bg-[#080807]/10" />
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(8,8,7,0.82) 0%, rgba(8,8,7,0.18) 45%, transparent 75%)",
+            }}
+          />
 
-          <span className="text-[9px] uppercase tracking-[0.3em] text-white/75">
-            Learning in motion
+          {/* Preview label */}
+          <div className="pointer-events-none absolute bottom-5 left-5 flex items-center gap-3 md:bottom-7 md:left-7">
+          </div>
+
+          {/* Persistent hint that the full video is one click away */}
+          {!whatWeDoPreviewEnded && (
+            <div className="pointer-events-none absolute bottom-5 right-5 flex items-center gap-3 rounded-full border border-white/20 bg-black/30 px-4 py-2 text-[9px] uppercase tracking-[0.2em] text-white/90 backdrop-blur-md transition-all duration-500 group-hover:border-white/40 group-hover:bg-black/50 md:bottom-7 md:right-7">
+              Watch the whole video
+              <span aria-hidden="true">↗</span>
+            </div>
+          )}
+
+          {/* End card appears inside the same video frame after 20 seconds */}
+          {whatWeDoPreviewEnded && (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 flex items-center justify-center bg-[#080807]/35 p-6 text-center backdrop-blur-[2px]"
+            >
+              <div className="pointer-events-none">
+                <span className="mb-5 block text-[9px] uppercase tracking-[0.35em] text-white/65">
+                  Continue the experience
+                </span>
+                <span className="block text-3xl font-light tracking-[-0.04em] text-white md:text-5xl">
+                  Watch the whole video
+                </span>
+                <span className="mt-5 inline-flex items-center gap-3 border border-white/30 px-5 py-3 text-[9px] uppercase tracking-[0.25em] text-white transition-colors duration-300 group-hover:border-white/60 group-hover:bg-white/10">
+                  Watch the video <span aria-hidden="true">↗</span>
+                </span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Entire preview is clickable, with no native video controls. */}
+          <span className="sr-only">
+            Watch the whole video and open the rating screen
           </span>
         </div>
-
-      </div>
+      </Link>
     </motion.div>
 
 
@@ -1287,425 +1304,7 @@ useEffect(() => {
 
   </div>
 </section>
-{/* ───────────────── Upcoming Activities ───────────────── */}
 
-<section
-  id="activities"
-  className="relative overflow-hidden bg-[#080807] px-6 py-32 md:px-10 md:py-48"
->
-  <div className="mx-auto max-w-7xl">
-
-    {/* Section label */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-15%" }}
-      transition={{ duration: 0.8 }}
-      className="flex items-center gap-4"
-    >
-      <span className="text-[9px] uppercase tracking-[0.35em] text-[#77716a]">
-        05
-      </span>
-
-      <span className="h-px w-8 bg-[#4d4944]" />
-
-      <span className="text-[9px] uppercase tracking-[0.35em] text-[#77716a]">
-        Upcoming Activities
-      </span>
-    </motion.div>
-
-
-    {/* Heading */}
-    <div className="mt-20 grid gap-12 md:grid-cols-[1fr_0.7fr] md:items-end">
-
-      <motion.h2
-        initial={{ opacity: 0, y: 45 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-15%" }}
-        transition={{
-          duration: 1,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        className="max-w-5xl text-5xl font-light leading-[0.94] tracking-[-0.055em] md:text-7xl lg:text-8xl"
-      >
-        Something is
-        <span className="text-[#716b65]">
-          {" "}
-          always unfolding.
-        </span>
-      </motion.h2>
-
-      <motion.p
-        initial={{ opacity: 0, y: 25 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{
-          duration: 0.8,
-          delay: 0.15,
-        }}
-        className="max-w-md text-sm leading-7 text-[#8d867f] md:text-base md:leading-8"
-      >
-        Workshops, conversations, explorations and
-        experiences designed to make knowledge something
-        you can encounter.
-      </motion.p>
-
-    </div>
-
-
-    {/* Activities */}
-    <div className="mt-24">
-
-      {[
-        {
-          number: "01",
-          status: "Upcoming",
-          title: "Activity / Workshop",
-          meta: "Details to be announced",
-        },
-        {
-          number: "02",
-          status: "Upcoming",
-          title: "Conversation / Session",
-          meta: "Details to be announced",
-        },
-        {
-          number: "03",
-          status: "Coming soon",
-          title: "Experience / Exploration",
-          meta: "Details to be announced",
-        },
-      ].map((activity, index) => (
-
-        <motion.div
-          key={activity.number}
-          initial={{
-            opacity: 0,
-            y: 30,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-            margin: "-10%",
-          }}
-          transition={{
-            duration: 0.7,
-            delay: index * 0.1,
-          }}
-          className="group border-t border-white/10 py-8 md:py-10"
-        >
-
-          <div className="grid gap-6 md:grid-cols-[80px_1fr_auto] md:items-center">
-
-            {/* Number */}
-            <span className="text-[9px] tracking-[0.25em] text-[#5d5853]">
-              {activity.number}
-            </span>
-
-
-            {/* Activity */}
-            <div>
-              <div className="flex flex-wrap items-center gap-4">
-
-                <h3 className="text-2xl font-light tracking-[-0.03em] transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
-                  {activity.title}
-                </h3>
-
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[7px] uppercase tracking-[0.25em] text-[#77716f]">
-                  {activity.status}
-                </span>
-
-              </div>
-
-              <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[#55514c]">
-                {activity.meta}
-              </p>
-            </div>
-
-
-            {/* Arrow */}
-            <span className="hidden text-xl font-light text-[#5d5853] transition-transform duration-500 group-hover:translate-x-2 md:block">
-              ↗
-            </span>
-
-          </div>
-
-        </motion.div>
-
-      ))}
-
-    </div>
-
-
-    {/* Bottom note */}
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-      className="mt-16 flex items-center gap-4"
-    >
-      <span className="h-px w-8 bg-[#4d4944]" />
-
-      <span className="text-[8px] uppercase tracking-[0.3em] text-[#514d48]">
-        More experiences ahead
-      </span>
-    </motion.div>
-
-  </div>
-
-
-  {/* Ambient glow */}
-  <div className="pointer-events-none absolute -right-40 top-1/3 h-[500px] w-[500px] rounded-full bg-[#9d6548]/[0.035] blur-[120px]" />
-
-</section>
-
-{/* ───────────────── Core Members ───────────────── */}
-
-<section
-  id="members"
-  className="relative overflow-hidden bg-[#f1ece2] px-6 py-32 text-[#171613] md:px-10 md:py-48"
->
-  <div className="mx-auto max-w-7xl">
-
-    {/* Section label */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-15%" }}
-      transition={{ duration: 0.8 }}
-      className="flex items-center gap-4"
-    >
-      <span className="text-[9px] uppercase tracking-[0.35em] text-[#81786e]">
-        06
-      </span>
-
-      <span className="h-px w-8 bg-[#a59b90]" />
-
-      <span className="text-[9px] uppercase tracking-[0.35em] text-[#81786e]">
-        Core Members
-      </span>
-    </motion.div>
-
-
-    {/* Intro */}
-    <div className="mt-20 grid gap-12 md:grid-cols-[1fr_0.7fr] md:items-end">
-
-      <motion.h2
-        initial={{ opacity: 0, y: 45 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-15%" }}
-        transition={{
-          duration: 1,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        className="max-w-5xl text-5xl font-light leading-[0.94] tracking-[-0.055em] md:text-7xl lg:text-8xl"
-      >
-        The people
-        <span className="text-[#877d72]">
-          {" "}
-          behind Tattva.
-        </span>
-      </motion.h2>
-
-
-      <motion.p
-        initial={{ opacity: 0, y: 25 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{
-          duration: 0.8,
-          delay: 0.15,
-        }}
-        className="max-w-md text-sm leading-7 text-[#625b53] md:text-base md:leading-8"
-      >
-        Tattva is shaped by the people who bring ideas,
-        perspectives and experiences into the centre.
-      </motion.p>
-
-    </div>
-
-
-    {/* Draft divider */}
-    <div className="mt-24 flex items-center justify-between border-t border-[#c9c1b5] pt-6">
-
-      <span className="text-[9px] uppercase tracking-[0.3em] text-[#8d8378]">
-        Core Members
-      </span>
-
-      <span className="rounded-full border border-[#bdb3a7] px-3 py-1 text-[8px] uppercase tracking-[0.25em] text-[#8d8378]">
-        Draft
-      </span>
-
-    </div>
-
-
-    {/* Portrait profiles */}
-    <div className="mt-12 grid gap-10 md:grid-cols-2">
-
-      {[1, 2].map((member, index) => (
-
-        <motion.article
-          key={member}
-          initial={{
-            opacity: 0,
-            y: 40,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-            margin: "-10%",
-          }}
-          transition={{
-            duration: 0.8,
-            delay: index * 0.12,
-          }}
-          className="group"
-        >
-
-          {/* Portrait */}
-          <div className="relative aspect-[4/5] overflow-hidden bg-[#ddd5c9]">
-
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[8px] uppercase tracking-[0.3em] text-[#a1988d]">
-                Portrait
-              </span>
-            </div>
-
-            {/* Hover layer */}
-            <div className="absolute inset-0 bg-black/[0.04] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-
-          </div>
-
-
-          {/* Profile */}
-          <div className="mt-6 border-t border-[#c9c1b5] pt-5">
-
-            <div className="flex items-start justify-between gap-6">
-
-              <div>
-
-                <h3 className="text-2xl font-light tracking-[-0.035em] md:text-3xl">
-                  Name
-                </h3>
-
-                <p className="mt-2 text-[8px] uppercase tracking-[0.3em] text-[#8d8378]">
-                  Main Role
-                </p>
-
-              </div>
-
-              <span className="text-[9px] tracking-[0.2em] text-[#aaa095]">
-                0{member}
-              </span>
-
-            </div>
-
-
-            <p className="mt-6 max-w-md text-sm leading-7 text-[#746c63]">
-              Short introduction about the member will appear here.
-              Their role, perspective and contribution to Tattva
-              will be introduced through this profile.
-            </p>
-
-
-            {/* Qualities */}
-            <div className="mt-8 flex flex-wrap gap-2">
-
-              {["Quality", "Quality", "Quality"].map(
-                (quality, qualityIndex) => (
-                  <span
-                    key={qualityIndex}
-                    className="border border-[#c9c1b5] px-3 py-2 text-[7px] uppercase tracking-[0.22em] text-[#8d8378]"
-                  >
-                    {quality}
-                  </span>
-                )
-              )}
-
-            </div>
-
-          </div>
-
-        </motion.article>
-
-      ))}
-
-    </div>
-
-
-    {/* Mentor placeholder */}
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{
-        duration: 0.8,
-        delay: 0.15,
-      }}
-      className="mt-20 border-t border-[#c9c1b5] pt-8"
-    >
-
-      <div className="grid gap-8 md:grid-cols-[180px_1fr_auto] md:items-center">
-
-        <span className="text-[8px] uppercase tracking-[0.3em] text-[#9a9085]">
-          Faculty / Mentor
-        </span>
-
-        <div>
-          <h3 className="text-2xl font-light tracking-[-0.03em]">
-            Mentor Profile
-          </h3>
-
-          <p className="mt-2 max-w-lg text-sm leading-7 text-[#746c63]">
-            A dedicated profile for the Class Mentor or faculty
-            mentor will be introduced here.
-          </p>
-        </div>
-
-        <span className="rounded-full border border-[#bdb3a7] px-3 py-1 text-[8px] uppercase tracking-[0.25em] text-[#8d8378]">
-          Draft
-        </span>
-
-      </div>
-
-    </motion.div>
-
-
-    {/* Future note */}
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-      className="mt-16 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-    >
-
-      <span className="text-[8px] uppercase tracking-[0.3em] text-[#9a9085]">
-        Profiles coming soon
-      </span>
-
-      <span className="text-[8px] uppercase tracking-[0.3em] text-[#9a9085]">
-        People · Perspective · Contribution
-      </span>
-
-    </motion.div>
-
-  </div>
-
-
-  {/* Side label */}
-  <div className="pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 rotate-90 text-[8px] uppercase tracking-[0.4em] text-[#aaa095] md:block">
-    Tattva / 06
-  </div>
-
-</section>
 {/* ───────────────── Instagram ───────────────── */}
 
 <section
@@ -2080,15 +1679,7 @@ useEffect(() => {
         >
           Journey
         </a>
-
-        <a
-          href="#activities"
-          className="text-[9px] uppercase tracking-[0.25em] text-[#77716f] transition-colors duration-300 hover:text-[#f4f0e8]"
-        >
-          Activities
-        </a>
-
-        <a
+<a
           href="#members"
           className="text-[9px] uppercase tracking-[0.25em] text-[#77716f] transition-colors duration-300 hover:text-[#f4f0e8]"
         >
