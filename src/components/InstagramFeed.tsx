@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Instagram, Play } from "lucide-react";
+import { ArrowUpRight, Play } from "lucide-react";
 import { instagramPosts } from "@/data/instagram-posts";
 
 function formatDate(value: string) {
@@ -21,7 +21,23 @@ export default function InstagramFeed() {
     <div className="mt-12">
       <div className="mb-5 flex items-center justify-between border-t border-white/10 pt-5">
         <div className="flex items-center gap-3">
-          <Instagram size={14} strokeWidth={1.4} className="text-[#a8a19a]" />
+          <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="14"
+  height="14"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.4"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="text-[#a8a19a]"
+  aria-hidden="true"
+>
+  <rect x="3" y="3" width="18" height="18" rx="5" />
+  <circle cx="12" cy="12" r="4" />
+  <circle cx="17.5" cy="6.5" r=".5" fill="currentColor" />
+</svg>
           <span className="text-[9px] uppercase tracking-[0.3em] text-[#77716f]">Selected moments</span>
         </div>
         <span className="text-[8px] uppercase tracking-[0.2em] text-[#595550]">@tattva_ikscentre</span>
