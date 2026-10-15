@@ -5,6 +5,14 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 
+// Add Instagram post URLs here as you publish them.
+// Example: { url: "https://www.instagram.com/p/POST_SHORTCODE/", label: "Event highlights" }
+const instagramPosts: { url: string; label: string }[] = [
+  // { url: "https://www.instagram.com/p/PASTE_POST_SHORTCODE/", label: "Event highlights" },
+  // { url: "https://www.instagram.com/p/PASTE_POST_SHORTCODE/", label: "IKS in action" },
+  // { url: "https://www.instagram.com/p/PASTE_POST_SHORTCODE/", label: "Behind the scenes" },
+];
+
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
@@ -1485,100 +1493,61 @@ useEffect(() => {
         </a>
 
 
-        {/* Preview grid */}
-        <div className="grid grid-cols-2 gap-px bg-white/10 md:grid-cols-3">
+        {/* Custom Instagram post grid */}
+        {instagramPosts.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 md:gap-5 md:p-6">
+            {instagramPosts.map((post, index) => {
+              const embedUrl = `${post.url.replace(/\/$/, "")}/embed`;
 
-          {[
-            {
-              label: "Explore",
-              number: "01",
-            },
-            {
-              label: "Experience",
-              number: "02",
-            },
-            {
-              label: "Connect",
-              number: "03",
-            },
-            {
-              label: "Discover",
-              number: "04",
-            },
-            {
-              label: "Create",
-              number: "05",
-            },
-            {
-              label: "Continue",
-              number: "06",
-            },
-          ].map((post, index) => (
-
+              return (
+                <article
+                  key={`${post.url}-${index}`}
+                  className="group overflow-hidden rounded-sm border border-white/10 bg-[#0d0d0c] transition-colors duration-300 hover:border-white/20"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#111110]">
+                    <iframe
+                      src={embedUrl}
+                      title={post.label || `Tattva Instagram post ${index + 1}`}
+                      className="absolute inset-0 h-full w-full border-0"
+                      loading="lazy"
+                      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                  <a
+                    href={post.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-4 px-4 py-3 text-xs text-[#a8a19a] transition-colors hover:text-white"
+                  >
+                    <span className="truncate">{post.label || `Post ${String(index + 1).padStart(2, "0")}`}</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="px-6 py-14 text-center md:px-10 md:py-20">
+            <p className="text-[9px] uppercase tracking-[0.3em] text-[#77716f]">
+              From our Instagram
+            </p>
+            <h4 className="mt-4 text-2xl font-light tracking-[-0.03em] text-[#f4f0e8] md:text-3xl">
+              Moments from Tattva
+            </h4>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#827b74]">
+              Add your Instagram post links to the <code className="text-[#c8b7a4]">instagramPosts</code> list at the top of this file. Each public post will appear here in its own card.
+            </p>
             <a
-              key={post.number}
               href="https://www.instagram.com/tattva_ikscentre/"
               target="_blank"
-              rel="noreferrer"
-              className="group relative aspect-square overflow-hidden bg-[#181715]"
+              rel="noopener noreferrer"
+              className="mt-7 inline-flex items-center gap-3 border border-white/15 px-5 py-3 text-[9px] uppercase tracking-[0.25em] text-[#c7c0b7] transition-colors hover:border-white/35 hover:text-white"
             >
-
-              {/* Ambient visual */}
-              <div
-                className={`absolute inset-0 transition-transform duration-700 group-hover:scale-110 ${
-                  index % 3 === 0
-                    ? "bg-[#6f4937]/20"
-                    : index % 3 === 1
-                      ? "bg-[#3d4038]/20"
-                      : "bg-[#82735f]/15"
-                }`}
-              />
-
-              {/* Grid texture */}
-              <div
-                className="absolute inset-0 opacity-[0.08]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-                  backgroundSize: "32px 32px",
-                }}
-              />
-
-              {/* Content */}
-              <div className="absolute inset-0 flex flex-col justify-between p-5 md:p-7">
-
-                <div className="flex justify-between">
-
-                  <span className="text-[8px] tracking-[0.25em] text-white/40">
-                    {post.number}
-                  </span>
-
-                  <span className="text-xs text-white/30 transition-all duration-500 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1">
-                    ↗
-                  </span>
-
-                </div>
-
-                <div>
-
-                  <p className="text-[9px] uppercase tracking-[0.3em] text-white/40">
-                    Tattva
-                  </p>
-
-                  <h4 className="mt-2 text-xl font-light tracking-[-0.03em] text-white/80 md:text-2xl">
-                    {post.label}
-                  </h4>
-
-                </div>
-
-              </div>
-
+              Browse Instagram <span aria-hidden="true">↗</span>
             </a>
-
-          ))}
-
-        </div>
-
+          </div>
+        )}
 
         {/* Footer */}
         <a
